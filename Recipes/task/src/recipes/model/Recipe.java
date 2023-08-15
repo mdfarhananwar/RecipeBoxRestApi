@@ -1,33 +1,51 @@
 package recipes.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import org.hibernate.Hibernate;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Objects;
 
-@Data
-@NoArgsConstructor
-
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+@AllArgsConstructor
+@Entity
 public class Recipe {
-    private static Long nextId = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
     private Long id;
+    @NotNull
+    @NotBlank
     private String name;
+    @NotBlank
     private String description;
+    @ElementCollection
+    @NotNull
+    @NotEmpty
     private List<String> ingredients;
+    @ElementCollection
+    @NotNull
+    @NotEmpty
     private List<String> directions;
 
-    public Recipe(Long id, String name, String description, List<String> ingredients, List<String> directions) {
-        this.id = nextId++;
-        this.name = name;
-        this.description = description;
-        this.ingredients = ingredients;
-        this.directions = directions;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Recipe recipe = (Recipe) o;
+        return id != null && Objects.equals(id, recipe.id);
     }
-    public Recipe(Long id,RecipeRequest recipeRequest) {
-        this.id = nextId++;
-        this.name = recipeRequest.getName();
-        this.description = recipeRequest.getDescription();
-        this.ingredients = recipeRequest.getIngredients();
-        this.directions = recipeRequest.getDirections();
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

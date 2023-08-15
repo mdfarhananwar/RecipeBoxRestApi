@@ -1,22 +1,28 @@
 package recipes.controller;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import recipes.model.Recipe;
-import recipes.model.RecipeRequest;
+import recipes.service.RecipeService;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.fasterxml.jackson.databind.type.LogicalType.Map;
 
 @RestController
 public class RecipeController {
 
-    private Recipe latest;
-    Map<String, Long> status = new HashMap<>();
+    private final RecipeService recipeService;
+    private Recipe latest = new Recipe();
+    Map<Long, Recipe> recipes = new HashMap<>();
+
+    @Autowired
+    public RecipeController(RecipeService recipeService) {
+        this.recipeService = recipeService;
+    }
 
     @PostMapping("/api/recipe")
     public ResponseEntity<Void> addRecipe(@RequestBody Recipe recipe) {
@@ -29,21 +35,24 @@ public class RecipeController {
         return ResponseEntity.ok(latest);
     }
 
-    @PostMapping("POST /api/recipe/new")
-    public ResponseEntity<?> addNewRecipe(@RequestBody RecipeRequest recipe) {
-        latest = new Recipe(latest.getId(), recipe);
-
-        status.put("status", latest.getId());
-        return ResponseEntity.ok(status);
+    @PostMapping("/api/recipe/new")
+    public ResponseEntity<?> addNewRecipe(@Valid @RequestBody Recipe recipe) {
+        System.out.println("Enter NEW POST API");
+//        latest = new Recipe(latest.getId(), recipe);
+//
+//        status.put("id", latest.getId());
+//        recipes.put(latest.getId(), latest);
+//        return ResponseEntity.ok(status);
+        return recipeService.addRecipeNew(recipe);
     }
 
-    @GetMapping("GET /api/recipe/{id}")
+    @GetMapping("/api/recipe/{id}")
     public ResponseEntity<?> getRecipeWithId(@PathVariable Long id) {
-        if (status.containsValue(id)) {
-            return ResponseEntity.ok(latest);
-        }
+        return recipeService.getRecipeWithId(id);
+    }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-
+    @DeleteMapping("/api/recipe/{id}")
+    public ResponseEntity<?> deleteRecipeById(@PathVariable Long id) {
+        return recipeService.deleteRecipeById(id);
     }
 }
