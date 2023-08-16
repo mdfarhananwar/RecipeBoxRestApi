@@ -1,7 +1,6 @@
 package recipes.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.*;
@@ -44,6 +43,12 @@ public class Recipe {
     @NotEmpty
     private List<String> directions;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    @ToString.Exclude
+    private User user;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -51,6 +56,7 @@ public class Recipe {
         Recipe recipe = (Recipe) o;
         return id != null && Objects.equals(id, recipe.id);
     }
+
     @JsonSerialize(using = ToStringSerializer.class)
     public String getDate() {
         return date;

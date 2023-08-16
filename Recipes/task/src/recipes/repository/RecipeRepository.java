@@ -24,8 +24,10 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     boolean existsByCategoryIgnoreCase(@NotEmpty String category);
 
     List<Recipe> findByCategoryIgnoreCase(@NotEmpty String category, Sort sort);
+
     List<Recipe> findByNameIgnoreCaseContainsOrderByDateDesc(String name);
 
     boolean existsByNameIgnoreCase(@NotEmpty String name);
+
     List<Recipe> findByNameIgnoreCase(@NotEmpty String name, Sort sort);
 }
