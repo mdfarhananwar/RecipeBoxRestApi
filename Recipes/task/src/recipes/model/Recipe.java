@@ -1,6 +1,9 @@
 package recipes.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -26,6 +29,11 @@ public class Recipe {
     @NotBlank
     private String name;
     @NotBlank
+    private String category;
+
+    @JsonIgnore
+    private String date;
+    @NotBlank
     private String description;
     @ElementCollection
     @NotNull
@@ -42,6 +50,10 @@ public class Recipe {
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Recipe recipe = (Recipe) o;
         return id != null && Objects.equals(id, recipe.id);
+    }
+    @JsonSerialize(using = ToStringSerializer.class)
+    public String getDate() {
+        return date;
     }
 
     @Override
